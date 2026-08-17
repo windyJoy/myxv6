@@ -2,7 +2,7 @@ CC = riscv64-linux-gnu-gcc
 LD = riscv64-linux-gnu-ld
 QEMU = qemu-system-riscv64
 
-CFLAGS = -march=rv64gc -ffreestanding -nostdlib -fno-builtin
+CFLAGS = -march=rv64gc -ffreestanding -nostdlib -fno-builtin -mcmodel=medany
 LDFLAGS = -T kernel/kernel.ld
 
 OBJS = kernel/entry.o kernel/main.o kernel/start.o
@@ -16,7 +16,7 @@ kernel/entry.o: kernel/entry.S
 kernel/main.o: kernel/main.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-kernel/start.o: kernel/start.c kernel/param.h
+kernel/start.o: kernel/start.c kernel/types.h kernel/param.h kernel/riscv.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 qemu: kernel/kernel

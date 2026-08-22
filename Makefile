@@ -3,7 +3,9 @@ K = kernel
 OBJS = \
 	$(K)/entry.o \
 	$(K)/start.o \
-	$(K)/main.o
+	$(K)/main.o \
+	$(K)/printf.o \
+	$(K)/uart.o \
 
 
 CC = riscv64-linux-gnu-gcc

@@ -1,6 +1,17 @@
-void main(void)
+#include "types.h"
+#include "param.h"
+#include "memlayout.h"
+#include "riscv.h"
+#include "defs.h"
+
+void
+main(void)
 {
-    while(1){
-        
-    }
+    uartinit();
+    printfinit();
+    printf("\n");
+    printf("xv6 kernel is booting\n");
+    printf("\n");
+    while(1);
+
 }

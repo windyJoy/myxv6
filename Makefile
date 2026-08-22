@@ -1,41 +1,54 @@
+K = kernel
+
+OBJS = \
+	$(K)/entry.o \
+	$(K)/start.o \
+	$(K)/main.o
+
+
 CC = riscv64-linux-gnu-gcc
 LD = riscv64-linux-gnu-ld
 QEMU = qemu-system-riscv64
 
-CFLAGS = -march=rv64gc -ffreestanding -nostdlib -fno-builtin -mcmodel=medany
-LDFLAGS = -T kernel/kernel.ld
+CFLAGS = -Wall -O -ggdb \
+	-ffreestanding \
+	-mcmodel=medany \
+	-MD
 
-OBJS = kernel/entry.o kernel/main.o kernel/start.o
+LDFLAGS = -z max-page-size=4096
 
-kernel/kernel: $(OBJS) kernel/kernel.ld
-	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+$(K)/kernel: $(OBJS) $(K)/kernel.ld
+	$(LD) $(LDFLAGS) \
+		-T $(K)/kernel.ld \
+		-o $@ $(OBJS)
 
-kernel/entry.o: kernel/entry.S
-	$(CC) $(CFLAGS) -c $< -o $@
+$(K)/%.o: $(K)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-kernel/main.o: kernel/main.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(K)/%.o: $(K)/%.S
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-kernel/start.o: kernel/start.c kernel/types.h kernel/param.h kernel/riscv.h
-	$(CC) $(CFLAGS) -c $< -o $@
+-include $(K)/*.d
 
-qemu: kernel/kernel
+qemu: $(K)/kernel
 	$(QEMU) \
 		-machine virt \
 		-bios none \
-		-kernel kernel/kernel \
+		-kernel $(K)/kernel \
 		-m 128M \
+		-smp 1 \
 		-nographic
 
-qemu-gdb: kernel/kernel
+qemu-gdb: $(K)/kernel
 	$(QEMU) \
-    	-machine virt \
-    	-bios none \
-    	-kernel kernel/kernel \
-    	-m 128M \
-    	-nographic \
-    	-S \
-    	-gdb tcp::1234
+		-machine virt \
+		-bios none \
+		-kernel $(K)/kernel \
+		-m 128M \
+		-smp 1 \
+		-nographic \
+		-S \
+		-gdb tcp::1234
 
 clean:
-	rm -f kernel/*.o kernel/kernel
+	rm -f $(K)/*.o $(K)/*.d $(K)/kernel

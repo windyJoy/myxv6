@@ -6,6 +6,8 @@ OBJS = \
 	$(K)/main.o \
 	$(K)/printf.o \
 	$(K)/uart.o \
+	$(K)/string.o\
+	$(K)/kalloc.o
 
 
 CC = riscv64-linux-gnu-gcc

@@ -12,6 +12,5 @@ main(void)
     printf("\n");
     printf("xv6 kernel is booting\n");
     printf("\n");
-    while(1);
-
+    kinit();
 }

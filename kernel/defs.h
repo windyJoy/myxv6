@@ -1,3 +1,6 @@
+struct context;
+struct proc;
+
 //uart.c
 void            uartinit(void);
 void            uartputc_sync(int);
@@ -20,3 +23,20 @@ char*           strncpy(char*, const char*, int);
 void*           kalloc(void);
 void            kfree(void*);
 void            kinit(void);
+
+// proc.c
+int             cpuid(void);
+struct cpu*     mycpu(void);
+struct proc*    myproc(void);
+void            sched(void);
+void            yield(void);
+void            procinit(void);
+void            scheduler(void) __attribute__((noreturn));
+void            userinit(void);
+
+// swtch.S
+void            swtch(struct context*, struct context*);
+
+// user.c
+void            user_task0(void);
+void            user_task1(void);

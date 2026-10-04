@@ -7,7 +7,10 @@ OBJS = \
 	$(K)/printf.o \
 	$(K)/uart.o \
 	$(K)/string.o\
-	$(K)/kalloc.o
+	$(K)/kalloc.o\
+	$(K)/proc.o\
+	$(K)/swtch.o\
+	$(K)/user.o
 
 
 CC = riscv64-linux-gnu-gcc

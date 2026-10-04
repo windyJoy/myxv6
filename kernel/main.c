@@ -13,4 +13,7 @@ main(void)
     printf("xv6 kernel is booting\n");
     printf("\n");
     kinit();
+    procinit();
+    userinit();
+    scheduler();
 }

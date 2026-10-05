@@ -33,4 +33,5 @@ struct proc {
 
     uint64 kstack;
     struct context context;
+    void (*start)(void);
 };

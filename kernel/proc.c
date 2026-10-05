@@ -11,6 +11,8 @@ struct proc proc[NPROC];
 
 int nextpid = 1;
 
+void kerneltrapret(void);
+
 void
 procinit(void)
 {
@@ -71,8 +73,9 @@ found:
     p->state = USED;
 
     memset(&p->context, 0, sizeof(p->context));
-    p->context.ra = (uint64)start_routin;
+    p->context.ra = (uint64)kerneltrapret;
     p->context.sp = p->kstack + PGSIZE;
+    p->start = start_routin;
 
     return p;
 }
@@ -91,6 +94,8 @@ userinit(void)
 void
 scheduler(void)
 {
+    intr_on();
+
     struct proc *p;
     struct cpu *c = mycpu();
 
@@ -100,7 +105,9 @@ scheduler(void)
             if(p->state == RUNNABLE){
                 p->state = RUNNING;
                 c->proc = p;
+                intr_off();
                 swtch(&c->context, &p->context);
+                intr_on();
                 c->proc = 0;
             }
         }
@@ -113,7 +120,9 @@ sched(void)
     struct proc *p = myproc();
     if(p->state == RUNNING)
         panic("sched RUNNING");
+    intr_off();
     swtch(&p->context, &mycpu()->context);
+    intr_on();
 }
 
 void
@@ -122,4 +131,19 @@ yield(void)
     struct proc *p = myproc();
     p->state = RUNNABLE;
     sched();
+}
+
+void
+kerneltrapret(void)
+{
+    struct proc *p = myproc();
+
+    unsigned long x = r_sstatus();
+    x |= SSTATUS_SPP;
+    x |= SSTATUS_SPIE;
+    w_sstatus(x);
+
+    w_sepc((uint64)p->start);
+
+    asm volatile("sret");
 }

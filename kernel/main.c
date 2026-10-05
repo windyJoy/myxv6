@@ -14,6 +14,8 @@ main(void)
     printf("\n");
     kinit();
     procinit();
+    trapinit();
+    trapinithart();
     userinit();
     scheduler();
 }

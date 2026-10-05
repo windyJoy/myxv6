@@ -10,7 +10,9 @@ OBJS = \
 	$(K)/kalloc.o\
 	$(K)/proc.o\
 	$(K)/swtch.o\
-	$(K)/user.o
+	$(K)/user.o\
+	$(K)/trap.o\
+	$(K)/kernelvec.o
 
 
 CC = riscv64-linux-gnu-gcc

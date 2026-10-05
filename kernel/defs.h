@@ -40,3 +40,7 @@ void            swtch(struct context*, struct context*);
 // user.c
 void            user_task0(void);
 void            user_task1(void);
+
+// trap.c
+void            trapinit(void);
+void            trapinithart(void);

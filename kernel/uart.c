@@ -6,6 +6,7 @@
 #include "param.h"
 #include "memlayout.h"
 #include "riscv.h"
+#include "spinlock.h"
 #include "defs.h"
 
 // the UART control registers are memory-mapped
@@ -36,6 +37,8 @@
 #define ReadReg(reg) (*(Reg(reg)))
 #define WriteReg(reg, v) (*(Reg(reg)) = (v))
 
+extern volatile int panicking;
+extern volatile int panicked;
 
 void
 uartinit(void)
@@ -64,7 +67,16 @@ uartinit(void)
 void
 uartputc_sync(int c)
 {
+    if(panicking == 0)
+      push_off();
+    
+    if(panicked){
+        for(;;);
+    }
     // wait for Transmit Holding Empty to be set in LSR
     while((ReadReg(LSR) & LSR_TX_IDLE) == 0);
     WriteReg(THR, c);
+
+    if(panicking == 0)
+      pop_off();
 }

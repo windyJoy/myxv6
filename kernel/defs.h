@@ -1,5 +1,6 @@
 struct context;
 struct proc;
+struct spinlock;
 
 //uart.c
 void            uartinit(void);
@@ -44,3 +45,11 @@ void            user_task1(void);
 // trap.c
 void            trapinit(void);
 void            trapinithart(void);
+
+// spinlock.c
+void            initlock(struct spinlock* lk, char* name);
+void            push_off(void);
+void            pop_off(void);
+int             holding(struct spinlock*lk);
+void            acquire(struct spinlock *lk);
+void            release(struct spinlock *lk);

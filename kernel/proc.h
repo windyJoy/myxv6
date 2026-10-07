@@ -21,6 +21,8 @@ struct context {
 struct cpu {
     struct proc *proc;
     struct context context;
+    int noff;
+    int intena;
 };
 
 extern struct cpu cpus[NCPU];

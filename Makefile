@@ -12,7 +12,8 @@ OBJS = \
 	$(K)/swtch.o\
 	$(K)/user.o\
 	$(K)/trap.o\
-	$(K)/kernelvec.o
+	$(K)/kernelvec.o\
+	$(K)/spinlock.o\
 
 
 CC = riscv64-linux-gnu-gcc

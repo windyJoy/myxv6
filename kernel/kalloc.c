@@ -5,6 +5,7 @@
 #include "types.h"
 #include "param.h"
 #include "memlayout.h"
+#include "spinlock.h"
 #include "riscv.h"
 #include "defs.h"
 
@@ -18,6 +19,7 @@ struct run {
 
 
 struct {
+    struct spinlock lock;
     struct run *freelist;
 } kmem;
 
@@ -25,6 +27,7 @@ struct {
 void
 kinit()
 {
+    initlock(&kmem.lock, "kmem");
     freerange(end, (void*)PHYSTOP);
 }
 
@@ -47,18 +50,23 @@ kfree(void *pa)
     memset(pa, 1, PGSIZE);
 
     r = (struct run*)pa;
+
+    acquire(&kmem.lock);
     r->next = kmem.freelist;
     kmem.freelist = r;
+    release(&kmem.lock);
 }
 
 void *
 kalloc(void)
 {
     struct run *r;
+    acquire(&kmem.lock);
     r = kmem.freelist;
     if(r)
         kmem.freelist = r->next;
-    
+    release(&kmem.lock);
+
     if(r)
         memset((char*)r, 5, PGSIZE);
         
